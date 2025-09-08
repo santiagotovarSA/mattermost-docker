@@ -9,7 +9,7 @@ services:
     healthCheckPath: /api/v4/system/ping
     envVars:
       - key: MM_SERVICESETTINGS_SITEURL
-        value: https://mattermost-pemser.onrender.com
+        value: https://mattermost-ek2b.onrender.com
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
