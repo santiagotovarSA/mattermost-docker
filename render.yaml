@@ -11,7 +11,7 @@ services:
     envVars:
       # URL pública (ajústala tras el 1er deploy)
       - key: MM_SERVICESETTINGS_SITEURL
-        value: "https://TU-URL.onrender.com"
+        value: "https://mattermost-pemser.onrender.com"
 
       # DB Postgres gestionada por Render (plan Free)
       - key: MM_SQLSETTINGS_DRIVERNAME
