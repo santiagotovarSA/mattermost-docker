@@ -3,7 +3,7 @@ services:
     name: mattermost
     runtime: image
     image:
-      url: hub.docker.com/r/mattermost/mattermost-team-edition
+      url: docker.io/mattermost/mattermost-team-edition:release-10.12
     plan: free
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
