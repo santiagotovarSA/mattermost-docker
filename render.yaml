@@ -4,22 +4,16 @@ services:
     runtime: image
     image:
       url: docker.io/mattermost/mattermost-team-edition:release-10.5
-    plan: starter
+    plan: free
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
 
-    # Disco persistente donde la imagen guarda config, data, logs, plugins, etc.
-    disk:
-      name: mm-data
-      mountPath: /mattermost
-      sizeGB: 10
-
     envVars:
-      # URL pública; cámbiala tras el primer deploy por tu dominio o la URL de Render
+      # URL pública (ajústala tras el 1er deploy)
       - key: MM_SERVICESETTINGS_SITEURL
         value: "https://TU-URL.onrender.com"
 
-      # Driver y datasource para Postgres de Render
+      # DB Postgres gestionada por Render (plan Free)
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
@@ -27,15 +21,16 @@ services:
           name: mattermost-db
           property: connectionString
 
-      # Nivel de log útil
+      # Logging útil
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: "INFO"
 
-    # Para Docker runtime NO se usa startCommand; usamos dockerCommand
+    # En runtime:image no uses startCommand; usa dockerCommand si necesitas algo previo
     dockerCommand: >
       /bin/sh -lc 'chown -R 2000:2000 /mattermost || true; exec /entrypoint.sh mattermost'
 
 databases:
   - name: mattermost-db
     databaseName: mattermost
-    plan: starter
+    plan: free
+
