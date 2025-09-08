@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: mattermost
+    env: docker
+    image:
+      url: docker.io/mattermost/mattermost-team-edition:release-10.5
+    plan: starter            # puedes subir de plan si necesitas más CPU/RAM
+    autoDeploy: true
+    healthCheckPath: /api/v4/system/ping
+    envVars:
+      # Render expone el puerto en la var PORT; hacemos que MM escuche ahí
+      - key: MM_SERVICESETTINGS_LISTENADDRESS
+        value: ":${PORT}"
+
+      # URL pública de tu instancia (cámbiala después del primer deploy)
+      - key: MM_SERVICESETTINGS_SITEURL
+        value: "https://TU-DOMINIO.onrender.com"
+
+      # DB: driver y datasource. Usamos la URL de la DB de abajo y forzamos SSL.
+      - key: MM_SQLSETTINGS_DRIVERNAME
+        value: postgres
+      - key: MM_SQLSETTINGS_DATASOURCE
+        fromDatabase:
+          name: mattermost-db
+          property: connectionString
+      - key: MM_SQLSETTINGS_DATASOURCE_QUERY
+        value: "sslmode=require&connect_timeout=10"
+
+      # Ajustes útiles de arranque
+      - key: MM_ENABLEYZIPS
+        value: "true"
+      - key: MM_LOGSETTINGS_CONSOLELEVEL
+        value: "INFO"
+
+    # Discos persistentes: todo lo de Mattermost vive bajo /mattermost
+    disk:
+      name: mm-data
+      mountPath: /mattermost
+      sizeGB: 10
+
+    # Antes de arrancar, nos aseguramos de que la carpeta tenga el uid esperado (2000)
+    startCommand: >
+      /bin/sh -lc "
+      chown -R 2000:2000 /mattermost || true;
+      /entrypoint.sh mattermost
+      "
+
+databases:
+  - name: mattermost-db
+    databaseName: mattermost
+    plan: starter    # Render crea la DB gestionada
