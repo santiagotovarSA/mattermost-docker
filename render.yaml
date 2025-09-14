@@ -3,12 +3,12 @@ services:
     name: mattermost-pemser
     runtime: image
     image:
-      url: docker.io/mattermost/mattermost-team-edition:release-10.5
+      url: docker.io/mattermost/mattermost-team-edition:release-10.12
     plan: starter
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
+    # numInstances: 2   # <-- opcional para mayor disponibilidad
 
-    # Disco persistente solo para adjuntos/derivados (no tapa la app)
     disk:
       name: mm-data
       mountPath: /mattermost/data
@@ -25,6 +25,24 @@ services:
           property: connectionString
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: INFO
+
+      # --- Plugins habilitados y persistentes en el disco ---
+      - key: MM_PLUGINSETTINGS_ENABLE
+        value: "true"
+      - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
+        value: "true"
+      - key: MM_PLUGINSETTINGS_ENABLEMARKETPLACE
+        value: "true"
+      - key: MM_PLUGINSETTINGS_ENABLEREMOTEMARKETPLACE
+        value: "true"
+      - key: MM_PLUGINSETTINGS_DIRECTORY
+        value: /mattermost/data/plugins
+      - key: MM_PLUGINSETTINGS_CLIENTDIRECTORY
+        value: /mattermost/data/client/plugins
+
+      # (Opcional) límite de tamaño de archivos
+      - key: MM_FILESETTINGS_MAXFILESIZE
+        value: "20971520"
 
 databases:
   - name: mattermost-db
