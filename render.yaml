@@ -29,7 +29,7 @@ services:
 
       # Guardar la configuración en la DB (usa postgres:// y sslmode=require)
       - key: MM_CONFIG
-        value: 'postgres://<TU_CADENA_POSTGRES_CORREGIDA>?sslmode=require'
+        value: 'postgresql://mattermost_ct0k_user:30MSBJXWxEAppJG9wQyoUvCnRh9UD9uj@dpg-d2vib6v5r7bs73ct2a60-a/mattermost_ct0k'
 
       # Archivos y plugins locales en disco persistente
       - key: MM_FILESETTINGS_DIRECTORY
