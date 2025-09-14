@@ -28,10 +28,9 @@ services:
           property: connectionString
 
       # Guardar la configuración en la DB (System Console persiste)
-      - key: MM_CONFIG
-        fromDatabase:
-          name: mattermost-db
-          property: connectionString
+        - key: MM_CONFIG
+          value: postgresql://mattermost_ct0k_user:30MSBJXWxEAppJG9wQyoUvCnRh9UD9uj@dpg-d2vib6v5r7bs73ct2a60-a/mattermost_ct0k
+
 
       # ---- Archivos y Plugins en el DISCO local persistente ----
       # Todos los adjuntos/derivados van al disco montado
