@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mattermost
+    name: mattermost-pemser
     runtime: image
     image:
       url: docker.io/mattermost/mattermost-team-edition:release-10.5
@@ -16,7 +16,7 @@ services:
 
     envVars:
       - key: MM_SERVICESETTINGS_SITEURL
-        value: https://TU-URL.onrender.com
+        value: https://mattermost-pemser.onrender.com
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
