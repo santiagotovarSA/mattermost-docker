@@ -31,10 +31,6 @@ services:
         value: "true"
       - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
         value: "true"
-      - key: MM_PLUGINSETTINGS_ENABLEMARKETPLACE
-        value: "true"
-      - key: MM_PLUGINSETTINGS_ENABLEREMOTEMARKETPLACE
-        value: "true"
       - key: MM_PLUGINSETTINGS_DIRECTORY
         value: /mattermost/data/plugins
       - key: MM_PLUGINSETTINGS_CLIENTDIRECTORY
