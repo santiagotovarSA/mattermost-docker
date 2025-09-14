@@ -1,26 +1,25 @@
 services:
   - type: web
-    name: mattermost-pemser           # 6) renombrar servicio para intentar un subdominio más claro
+    name: mattermost-pemser
     runtime: image
     image:
       url: docker.io/mattermost/mattermost-team-edition:release-10.12
-    plan: starter                     # 1) upgrade: la app ya no “duerme”
+    plan: starter
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
-    # numInstances: 2                 # (opcional) alta disponibilidad básica / rolling deploys más suaves
 
-    # 2) Disco persistente: montamos en /mattermost para persistir data, plugins y config.json
+    # Disco persistente: TODO lo binario vive aquí
     disk:
       name: mm-data
-      mountPath: /mattermost
-      sizeGB: 10                      # ajusta según tus necesidades de adjuntos
+      mountPath: /mattermost/data
+      sizeGB: 10   # ajusta según lo que esperes almacenar
 
     envVars:
-      # 3) Config general del sitio (ajústala después del primer deploy si cambia el subdominio)
+      # URL pública exacta (ajústala a la que Render te asigne)
       - key: MM_SERVICESETTINGS_SITEURL
         value: https://mattermost-pemser.onrender.com
 
-      # 4) DB para datos de la app (posts, users, etc.)
+      # Base de datos (datos de usuarios, posts, etc.)
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
@@ -28,36 +27,44 @@ services:
           name: mattermost-db
           property: connectionString
 
-      # 3) Configuración alojada en la DB (System Console persiste en Postgres)
+      # Guardar la configuración en la DB (System Console persiste)
       - key: MM_CONFIG
         fromDatabase:
           name: mattermost-db
           property: connectionString
 
-      # 4) Plugins externos: habilitar y permitir subida (desde System Console)
+      # ---- Archivos y Plugins en el DISCO local persistente ----
+      # Todos los adjuntos/derivados van al disco montado
+      - key: MM_FILESETTINGS_DIRECTORY
+        value: /mattermost/data
+      # Tamaño máx de archivo (20 MB ejemplo)
+      - key: MM_FILESETTINGS_MAXFILESIZE
+        value: "20971520"
+
+      # Habilitar plugins y permitir subirlos desde la consola
       - key: MM_PLUGINSETTINGS_ENABLE
         value: "true"
       - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
         value: "true"
-      # Marketplace habilitado y remoto (útil para instalar plugins del marketplace)
+      # Marketplace (opcional)
       - key: MM_PLUGINSETTINGS_ENABLEMARKETPLACE
         value: "true"
       - key: MM_PLUGINSETTINGS_ENABLEREMOTEMARKETPLACE
         value: "true"
-      # Límite de tamaño de archivo (20 MB ejemplo). Ajústalo a lo que quieras permitir.
-      - key: MM_FILESETTINGS_MAXFILESIZE
-        value: "20971520"
 
-      # Logging útil
+      # Redirigimos las carpetas de plugins para que queden en el DISCO
+      - key: MM_PLUGINSETTINGS_DIRECTORY
+        value: /mattermost/data/plugins
+      - key: MM_PLUGINSETTINGS_CLIENTDIRECTORY
+        value: /mattermost/data/client/plugins
+
+      # Logging útil en consola
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: INFO
-
-    # (Opcional) dominio propio; descomenta y usa tu dominio para URL 100% limpia
-    # domains:
-    #   - your-chat.tu-dominio.com
 
 databases:
   - name: mattermost-db
     databaseName: mattermost
-    plan: basic-256mb                # 2) upgrade de la DB: persistente
-    diskSizeGB: 15                   # tamaño de disco de la DB (ajústalo si quieres)
+    plan: basic-256mb
+    diskSizeGB: 15
+
