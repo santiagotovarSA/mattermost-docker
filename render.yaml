@@ -8,18 +8,18 @@ services:
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
 
-    # Disco persistente: TODO lo binario vive aquí
+    # Disco persistente: archivos y plugins viven acá
     disk:
       name: mm-data
       mountPath: /mattermost/data
-      sizeGB: 10   # ajusta según lo que esperes almacenar
+      sizeGB: 10
 
     envVars:
-      # URL pública exacta (ajústala si Render te asigna un sufijo)
+      # URL pública (ajústala si Render te pone un sufijo)
       - key: MM_SERVICESETTINGS_SITEURL
         value: https://mattermost-pemser.onrender.com
 
-      # Base de datos (datos de usuarios, posts, etc.)
+      # Base de datos de la app (posts/usuarios/etc.)
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
@@ -27,25 +27,23 @@ services:
           name: mattermost-db
           property: connectionString
 
-      # Guardar la configuración en la DB (usa postgres:// y sslmode=require)
-      - key: MM_CONFIG
-        value: 'postgresql://mattermost_ct0k_user:30MSBJXWxEAppJG9wQyoUvCnRh9UD9uj@dpg-d2vib6v5r7bs73ct2a60-a/mattermost_ct0k'
-
-      # Archivos y plugins locales en disco persistente
+      # Archivos locales en el disco persistente
       - key: MM_FILESETTINGS_DIRECTORY
         value: /mattermost/data
       - key: MM_FILESETTINGS_MAXFILESIZE
-        value: '20971520'
+        value: "20971520"
 
+      # Plugins habilitados y subidas desde la consola
       - key: MM_PLUGINSETTINGS_ENABLE
-        value: 'true'
+        value: "true"
       - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
-        value: 'true'
+        value: "true"
       - key: MM_PLUGINSETTINGS_ENABLEMARKETPLACE
-        value: 'true'
+        value: "true"
       - key: MM_PLUGINSETTINGS_ENABLEREMOTEMARKETPLACE
-        value: 'true'
+        value: "true"
 
+      # Guardar plugins también en el disco persistente
       - key: MM_PLUGINSETTINGS_DIRECTORY
         value: /mattermost/data/plugins
       - key: MM_PLUGINSETTINGS_CLIENTDIRECTORY
@@ -59,5 +57,3 @@ databases:
     databaseName: mattermost
     plan: basic-256mb
     diskSizeGB: 15
-
-
