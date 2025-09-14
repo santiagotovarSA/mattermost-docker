@@ -1,54 +1,28 @@
 services:
   - type: web
-    name: mattermost-pemser
+    name: mattermost
     runtime: image
     image:
-      url: docker.io/mattermost/mattermost-team-edition:release-10.12
+      url: docker.io/mattermost/mattermost-team-edition:release-10.5
     plan: starter
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
 
-    # Disco persistente: archivos y plugins viven acá
+    # Disco persistente solo para adjuntos/derivados (no tapa la app)
     disk:
       name: mm-data
       mountPath: /mattermost/data
       sizeGB: 10
 
     envVars:
-      # URL pública (ajústala si Render te pone un sufijo)
       - key: MM_SERVICESETTINGS_SITEURL
-        value: https://mattermost-pemser.onrender.com
-
-      # Base de datos de la app (posts/usuarios/etc.)
+        value: https://TU-URL.onrender.com
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
         fromDatabase:
           name: mattermost-db
           property: connectionString
-
-      # Archivos locales en el disco persistente
-      - key: MM_FILESETTINGS_DIRECTORY
-        value: /mattermost/data
-      - key: MM_FILESETTINGS_MAXFILESIZE
-        value: "20971520"
-
-      # Plugins habilitados y subidas desde la consola
-      - key: MM_PLUGINSETTINGS_ENABLE
-        value: "true"
-      - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
-        value: "true"
-      - key: MM_PLUGINSETTINGS_ENABLEMARKETPLACE
-        value: "true"
-      - key: MM_PLUGINSETTINGS_ENABLEREMOTEMARKETPLACE
-        value: "true"
-
-      # Guardar plugins también en el disco persistente
-      - key: MM_PLUGINSETTINGS_DIRECTORY
-        value: /mattermost/data/plugins
-      - key: MM_PLUGINSETTINGS_CLIENTDIRECTORY
-        value: /mattermost/data/client/plugins
-
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: INFO
 
@@ -57,3 +31,4 @@ databases:
     databaseName: mattermost
     plan: basic-256mb
     diskSizeGB: 15
+
