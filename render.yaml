@@ -1,27 +1,68 @@
 services:
   - type: web
-    name: mattermost
+    name: mattermost-pemser           # 6) renombrar servicio para intentar un subdominio más claro
     runtime: image
     image:
       url: docker.io/mattermost/mattermost-team-edition:release-10.12
-    plan: free
+    plan: starter                     # 1) upgrade: la app ya no “duerme”
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
+    # numInstances: 2                 # (opcional) alta disponibilidad básica / rolling deploys más suaves
+
+    # 2) Disco persistente: montamos en /mattermost para persistir data, plugins y config.json
+    disk:
+      name: mm-data
+      mountPath: /mattermost
+      sizeGB: 10                      # ajusta según tus necesidades de adjuntos
+
     envVars:
+      # 3) Config general del sitio (ajústala después del primer deploy si cambia el subdominio)
       - key: MM_SERVICESETTINGS_SITEURL
-        value: https://mattermost-ek2b.onrender.com
+        value: https://mattermost-pemser.onrender.com
+
+      # 4) DB para datos de la app (posts, users, etc.)
       - key: MM_SQLSETTINGS_DRIVERNAME
         value: postgres
       - key: MM_SQLSETTINGS_DATASOURCE
         fromDatabase:
           name: mattermost-db
           property: connectionString
+
+      # 3) Configuración alojada en la DB (System Console persiste en Postgres)
+      - key: MM_CONFIG
+        fromDatabase:
+          name: mattermost-db
+          property: connectionString
+
+      # 4) Plugins externos: habilitar y permitir subida (desde System Console)
+      - key: MM_PLUGINSETTINGS_ENABLE
+        value: "true"
+      - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
+        value: "true"
+      # Marketplace habilitado y remoto (útil para instalar plugins del marketplace)
+      - key: MM_PLUGINSETTINGS_ENABLEMARKETPLACE
+        value: "true"
+      - key: MM_PLUGINSETTINGS_ENABLEREMOTEMARKETPLACE
+        value: "true"
+      # Límite de tamaño de archivo (20 MB ejemplo). Ajústalo a lo que quieras permitir.
+      - key: MM_FILESETTINGS_MAXFILESIZE
+        value: "20971520"
+
+      # Logging útil
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: INFO
+
+    # Con disco persistente, aseguramos permisos del path para el usuario 2000 (Mattermost)
+    # NOTA: Render runtime:image permite dockerCommand. OJO con comillas: usa esta forma segura.
+    dockerCommand: >
+      sh -lc 'chown -R 2000:2000 /mattermost || true; exec /entrypoint.sh mattermost'
+
+    # (Opcional) dominio propio; descomenta y usa tu dominio para URL 100% limpia
+    # domains:
+    #   - your-chat.tu-dominio.com
 
 databases:
   - name: mattermost-db
     databaseName: mattermost
-    plan: free
-
-
+    plan: basic-256mb                # 2) upgrade de la DB: persistente
+    diskSizeGB: 15                   # tamaño de disco de la DB (ajústalo si quieres)
