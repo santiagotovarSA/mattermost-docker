@@ -3,17 +3,10 @@ services:
     name: mattermost-pemser
     runtime: image
     image:
-      url: docker.io/mattermost/mattermost-team-edition:release-10.5
+      url: docker.io/mattermost/mattermost-team-edition:release-10.12
     plan: starter
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
-
-    # Disco persistente solo para adjuntos/derivados (no tapa la app)
-    disk:
-      name: mm-data
-      mountPath: /mattermost/data
-      sizeGB: 10
-
     envVars:
       - key: MM_SERVICESETTINGS_SITEURL
         value: https://mattermost-pemser.onrender.com
@@ -23,6 +16,14 @@ services:
         fromDatabase:
           name: mattermost-db
           property: connectionString
+      - key: MM_CONFIG
+        fromDatabase:
+          name: mattermost-db
+          property: connectionString
+      - key: MM_PLUGINSETTINGS_ENABLE
+        value: "true"
+      - key: MM_PLUGINSETTINGS_ENABLEUPLOADS
+        value: "true"
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: INFO
 
@@ -31,4 +32,3 @@ databases:
     databaseName: mattermost
     plan: basic-256mb
     diskSizeGB: 15
-
