@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mattermost
+    name: mattermost-pemser
     runtime: image
     image:
       url: docker.io/mattermost/mattermost-team-edition:release-10.5
