@@ -52,11 +52,6 @@ services:
       - key: MM_LOGSETTINGS_CONSOLELEVEL
         value: INFO
 
-    # Con disco persistente, aseguramos permisos del path para el usuario 2000 (Mattermost)
-    # NOTA: Render runtime:image permite dockerCommand. OJO con comillas: usa esta forma segura.
-    dockerCommand: >
-      /bin/sh -lc 'chown -R 2000:2000 /mattermost || true; exec /entrypoint.sh mattermost'
-
     # (Opcional) dominio propio; descomenta y usa tu dominio para URL 100% limpia
     # domains:
     #   - your-chat.tu-dominio.com
