@@ -4,7 +4,7 @@ services:
     runtime: image
     image:
       url: docker.io/mattermost/mattermost-team-edition:release-10.12
-    plan: starter
+    plan: standard
     autoDeploy: true
     healthCheckPath: /api/v4/system/ping
     # numInstances: 2   # <-- opcional para mayor disponibilidad
